@@ -1,7 +1,6 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-// import Hello from '@/components/Hello';
-import Scene from '@/components/Scene';
+import Scene from '../components/Scene';
 
 Vue.use(Router);
 
