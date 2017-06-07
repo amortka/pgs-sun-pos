@@ -1,24 +1,24 @@
 <template>
   <div id="app">
-    <Scene></Scene>
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
-  import Scene from './components/Scene';
-
   export default {
     name: 'app',
-    components: { Scene },
   };
 </script>
 
-<style>
+<style lang="scss">
   html, body {
-    background: #4c4b4b;
+    background: #fff;/*#4c4b4b;*/
     height: 100vh;
     margin: 0;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
   }
 
   #app {
@@ -27,5 +27,7 @@
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
     color: #2c3e50;
+    display: flex;
+    flex-grow: 1;
   }
 </style>
