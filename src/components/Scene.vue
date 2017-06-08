@@ -59,95 +59,46 @@
         camera.position.set(-8, 32, 36);
         camera.lookAt(scene.position);
 
-        /*controls = new TrackballControls(camera, CONTAINER);
-         controls.rotateSpeed = 5.0;
-         controls.zoomSpeed = 3.2;
-         controls.panSpeed = 0.8;
-         controls.noZoom = false;
-         controls.noPan = false;
-         controls.staticMoving = false;
-         controls.dynamicDampingFactor = 0.2;*/
-
         controls = new OrbitControls(camera, CONTAINER);
         controls.noPan = true;
         controls.minZoom = 10;
         controls.maxPolarAngle = deg2rad(80);
         controls.enableKeys = false;
-        controls.minDistance = 40;
+        controls.minDistance = 25;
         controls.maxDistance = 80;
         controls.zoomSpeed = 2;
     }
 
     function loadModel() {
-        const loader = new ColladaLoader();
-        const scale = 3;
+        const scale = 5;
+        const loader = new THREE.ObjectLoader();
+        const lineMaterial = new THREE.LineBasicMaterial({color: 0x7f8c8d, linewidth: 2});
 
-        const darkMaterial = new THREE.MeshBasicMaterial({color: 0xffffff});
-        const wireframeMaterial = new THREE.MeshBasicMaterial({color: 0xcccccc, wireframe: true, transparent: true});
-        const multiMaterial = [darkMaterial, wireframeMaterial];
-
+        const edges = [];
         loader.load(
-                // resource URL
-                '/static/models/sf_house.dae',
-                function(collada) {
-
-                    let toRemove = [];
-                    let edges = [];
-                    const lineMaterial = new THREE.LineBasicMaterial({color: 0x7f8c8d, linewidth: 2});
-
-                    collada.scene.traverse((object) => {
-
-                        object.castShadow = true;
-                        object.receiveShadow = true;
-                        if (object instanceof THREE.Mesh) {
-                            object.material.side = THREE.DoubleSide;
-
-                            const edgeGeometry = new THREE.EdgesGeometry(object.geometry);
-                            edges.push(new THREE.LineSegments(edgeGeometry, lineMaterial));
-                        }
-
-                        if (object.type === 'PointLight') {
-                            toRemove.push(object);
+                '/static/models/wroclavia.json',
+                function(object) {
+                    object.traverse((ob) => {
+                        if (ob instanceof THREE.Mesh) {
+                            ob.castShadow = true;
+                            ob.receiveShadow = true;
+                            ob.material.side = THREE.DoubleSide;
                         }
                     });
 
-                    toRemove.forEach(object => {
-                        collada.scene.remove(object);
-                    });
-
-                    edges.forEach(object => {
-                        collada.scene.add(object);
-                    });
-
-                    collada.scene.scale.set(scale, scale, scale);
-                    scene.add(collada.scene);
-                },
-                // Function called when download progresses
-                function(xhr) {
-                    console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+                    object.scale.set(scale, scale, scale);
+                    object.rotation.set(0, deg2rad(-15), 0);
+                    scene.add(object);
                 }
-        );
+        )
+
     }
 
     function addGeometry() {
-
-        const darkMaterial = new THREE.MeshBasicMaterial({color: 0xffffff});
-        const wireframeMaterial = new THREE.MeshBasicMaterial({color: 0xcccccc, wireframe: true, transparent: true});
-        const multiMaterial = [darkMaterial, wireframeMaterial];
-
-        const geometry = new THREE.BoxGeometry(15, 15, 5);
-//    const material = new THREE.MeshStandardMaterial({ color: 0xCC0000 });
-//    const box = new THREE.Mesh(geometry, multiMaterial);
-        const box = THREE.SceneUtils.createMultiMaterialObject(geometry, multiMaterial);
-        box.position.y = 7.5;
-        box.rotation.y = deg2rad(-103.09);
-        box.castShadow = true;
-        //scene.add(box);
-
         // circle
         const circleGeometry = new THREE.CircleGeometry(RADIUS, 64);
         const circleMaterial = new THREE.MeshStandardMaterial({color: 0xFFFFFF, transparent: false});
-//    const circleMaterial = new THREE.MeshBasicMaterial({color: 0xFFFFFF});
+        //    const circleMaterial = new THREE.MeshBasicMaterial({color: 0xFFFFFF});
         circleMaterial.side = THREE.DoubleSide;
 
         const circle = new THREE.Mesh(circleGeometry, circleMaterial);
@@ -195,6 +146,7 @@
         light.shadowCameraBottom = -50;
         light.shadowCameraRight = 50;
         light.shadowCameraTop = 50;
+        light.shadowBias = - 0.001;
         scene.add(light);
 
 //    const ambientLight = new THREE.AmbientLight(0x404040); // soft white light
@@ -266,7 +218,7 @@
         controls.update();
 
         // update compass rotation
-        COMPASS.style.transform = `rotate(${rad2deg(controls.getAzimuthalAngle() + Math.PI/2)}deg`;
+        COMPASS.style.transform = `rotate(${rad2deg(controls.getAzimuthalAngle() + Math.PI / 2)}deg`;
 
         render();
     }
